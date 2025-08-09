@@ -206,14 +206,18 @@ const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
+    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
       setTheme(savedTheme);
     }
   }, []);
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [theme]);
 
   const toggleTheme = useCallback(() => {
@@ -236,7 +240,11 @@ const FavoritesProvider = ({ children }) => {
   useEffect(() => {
     const savedFavorites = localStorage.getItem('favorites');
     if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch (e) {
+        setFavorites([]);
+      }
     }
   }, []);
 
@@ -265,33 +273,33 @@ const Header = () => {
   const { navigate, currentPage } = useContext(NavigationContext);
   
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/50 dark:border-gray-700/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             <button 
               onClick={() => navigate('home')}
-              className="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm px-2 py-1"
+              className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-lg px-3 py-2"
             >
               Recipe Finder
             </button>
-            <nav className="hidden md:flex space-x-6">
+            <nav className="hidden md:flex space-x-1">
               <button 
                 onClick={() => navigate('home')}
-                className={`transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm px-2 py-1 ${
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
                   currentPage === 'home' 
-                    ? 'text-blue-600 dark:text-blue-400' 
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/25' 
+                    : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'
                 }`}
               >
                 Home
               </button>
               <button 
                 onClick={() => navigate('favorites')}
-                className={`transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm px-2 py-1 ${
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
                   currentPage === 'favorites' 
-                    ? 'text-blue-600 dark:text-blue-400' 
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/25' 
+                    : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'
                 }`}
               >
                 Favorites
@@ -300,10 +308,27 @@ const Header = () => {
           </div>
           <button
             onClick={toggleTheme}
-            className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="relative p-3 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             aria-label="Toggle theme"
           >
-            {theme === 'light' ? '🌙' : '☀️'}
+            <div className="relative w-6 h-6">
+              <svg 
+                className={`absolute inset-0 w-6 h-6 transform transition-all duration-500 ${theme === 'light' ? 'rotate-0 opacity-100' : 'rotate-180 opacity-0'}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+              <svg 
+                className={`absolute inset-0 w-6 h-6 transform transition-all duration-500 ${theme === 'dark' ? 'rotate-0 opacity-100' : '-rotate-180 opacity-0'}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
           </button>
         </div>
       </div>
@@ -322,27 +347,30 @@ const SearchBar = ({ searchText, onSearchChange, maxTime, onMaxTimeChange }) => 
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="relative">
-        <input
-          ref={searchRef}
-          type="text"
-          value={searchText}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search recipes..."
-          className="w-full px-4 py-3 pl-10 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent"
-        />
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+    <div className="space-y-6">
+      <div className="relative group">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+        <div className="relative">
+          <input
+            ref={searchRef}
+            type="text"
+            value={searchText}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search for amazing recipes..."
+            className="w-full px-6 py-4 pl-14 text-lg text-gray-900 dark:text-white bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:border-purple-500 transition-all duration-300 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+          />
+          <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+            <svg className="h-6 w-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
         </div>
       </div>
       
-      <div className="flex flex-wrap gap-4">
-        <div className="flex items-center space-x-2">
-          <label htmlFor="maxTime" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Max time (minutes):
+      <div className="flex flex-wrap gap-4 items-center">
+        <div className="flex items-center space-x-3 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl px-4 py-2 border border-gray-200 dark:border-gray-700">
+          <label htmlFor="maxTime" className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+            Max time:
           </label>
           <input
             id="maxTime"
@@ -351,8 +379,9 @@ const SearchBar = ({ searchText, onSearchChange, maxTime, onMaxTimeChange }) => 
             onChange={(e) => onMaxTimeChange(e.target.value)}
             placeholder="60"
             min="0"
-            className="w-20 px-2 py-1 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="w-16 px-2 py-1 text-gray-900 dark:text-white bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded"
           />
+          <span className="text-sm text-gray-500 dark:text-gray-400">min</span>
         </div>
       </div>
     </div>
@@ -364,13 +393,13 @@ const TagChip = ({ tag, isSelected, onToggle }) => {
   return (
     <button
       onClick={() => onToggle(tag)}
-      className={`px-3 py-1 text-sm rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+      className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 transform hover:scale-105 ${
         isSelected
-          ? 'bg-blue-600 text-white hover:bg-blue-700'
-          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/25'
+          : 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-600'
       }`}
     >
-      {tag}
+      #{tag}
     </button>
   );
 };
@@ -391,10 +420,19 @@ const RecipeCard = ({ recipe, showFavoriteToggle = true }) => {
     navigate('recipe', recipe.id);
   }, [navigate, recipe.id]);
 
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty.toLowerCase()) {
+      case 'easy': return 'text-green-600 bg-green-100 dark:bg-green-900/30';
+      case 'medium': return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30';
+      case 'hard': return 'text-red-600 bg-red-100 dark:bg-red-900/30';
+      default: return 'text-gray-600 bg-gray-100 dark:bg-gray-800';
+    }
+  };
+
   return (
     <div 
       onClick={handleCardClick}
-      className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
+      className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-2xl transform transition-all duration-300 hover:scale-[1.02]"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -403,58 +441,68 @@ const RecipeCard = ({ recipe, showFavoriteToggle = true }) => {
         }
       }}
     >
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
-        <div className="relative">
-          <img
-            src={recipe.image}
-            alt={recipe.title}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
-          />
-          {showFavoriteToggle && (
-            <button
-              onClick={handleFavoriteClick}
-              className="absolute top-2 right-2 p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <svg className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </button>
-          )}
-        </div>
+      <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200/50 dark:border-gray-700/50">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         
-        <div className="p-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            {recipe.title}
-          </h3>
-          
-          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-3">
-            <span className="flex items-center">
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {recipe.time}m
-            </span>
-            <span className="flex items-center">
-              <svg className="w-4 h-4 mr-1 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-              </svg>
-              {recipe.rating}
-            </span>
-            <span className="capitalize">{recipe.difficulty}</span>
-          </div>
-          
-          <div className="flex flex-wrap gap-1">
-            {recipe.tags.slice(0, 3).map(tag => (
-              <span key={tag} className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">
-                {tag}
-              </span>
-            ))}
-            {recipe.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">
-                +{recipe.tags.length - 3}
-              </span>
+        <div className="relative">
+          <div className="relative overflow-hidden">
+            <img
+              src={recipe.image}
+              alt={recipe.title}
+              className="w-full h-52 object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+            
+            {showFavoriteToggle && (
+              <button
+                onClick={handleFavoriteClick}
+                className="absolute top-3 right-3 p-2.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 group/heart"
+                aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              >
+                <svg className={`w-5 h-5 transition-all duration-300 ${isFavorite ? 'text-red-500 fill-current scale-110' : 'text-gray-400 group-hover/heart:text-red-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
             )}
+          </div>
+        
+          <div className="relative p-6">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-2">
+              {recipe.title}
+            </h3>
+            
+            <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-4">
+              <div className="flex items-center space-x-4">
+                <span className="flex items-center">
+                  <svg className="w-4 h-4 mr-1.5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {recipe.time}m
+                </span>
+                <span className="flex items-center">
+                  <svg className="w-4 h-4 mr-1.5 text-yellow-500 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                  </svg>
+                  {recipe.rating}
+                </span>
+              </div>
+              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(recipe.difficulty)}`}>
+                {recipe.difficulty}
+              </span>
+            </div>
+            
+            <div className="flex flex-wrap gap-1.5">
+              {recipe.tags.slice(0, 3).map(tag => (
+                <span key={tag} className="px-2.5 py-1 text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full">
+                  #{tag}
+                </span>
+              ))}
+              {recipe.tags.length > 3 && (
+                <span className="px-2.5 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
+                  +{recipe.tags.length - 3}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -536,13 +584,22 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-            Discover Delicious Recipes
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+              Discover Amazing
+            </span>
+            <br />
+            <span className="text-gray-800 dark:text-white">Recipes</span>
           </h1>
-          
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Explore thousands of delicious recipes from around the world. Find your next favorite dish!
+          </p>
+        </div>
+        
+        <div className="mb-12">
           <SearchBar
             searchText={searchText}
             onSearchChange={onSearchChange}
@@ -550,9 +607,9 @@ const Home = () => {
             onMaxTimeChange={onMaxTimeChange}
           />
           
-          <div className="mt-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by tags:</h3>
-            <div className="flex flex-wrap gap-2">
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Popular Tags</h3>
+            <div className="flex flex-wrap gap-3">
               {allTags.map(tag => (
                 <TagChip
                   key={tag}
@@ -566,26 +623,33 @@ const Home = () => {
         </div>
 
         {filteredRecipes.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredRecipes.map(recipe => (
               <RecipeCard key={recipe.id} recipe={recipe} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="text-gray-500 dark:text-gray-400 mb-4">
-              <svg className="mx-auto h-12 w-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.678-4.29-3.75 0-.178.012-.355.037-.53A7.96 7.96 0 016 12C6 8.686 8.686 6 12 6s6 2.686 6 6c0 1.657-.672 3.158-1.757 4.243" />
-              </svg>
-              <p className="text-lg">No recipes match your search</p>
-              <p className="text-sm mt-1">Try adjusting your filters or search terms</p>
+          <div className="text-center py-20">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-20"></div>
+              </div>
+              <div className="relative text-gray-600 dark:text-gray-400 mb-8">
+                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full flex items-center justify-center">
+                  <svg className="h-12 w-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.678-4.29-3.75 0-.178.012-.355.037-.53A7.96 7.96 0 016 12C6 8.686 8.686 6 12 6s6 2.686 6 6c0 1.657-.672 3.158-1.757 4.243" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">No recipes found</h3>
+                <p className="text-lg mb-8">We couldn't find any recipes matching your search. Try adjusting your filters!</p>
+              </div>
+              <button
+                onClick={resetFilters}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-xl shadow-purple-500/25 hover:shadow-2xl hover:shadow-purple-500/40 transform hover:scale-105 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+              >
+                Reset All Filters
+              </button>
             </div>
-            <button
-              onClick={resetFilters}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-            >
-              Reset Filters
-            </button>
           </div>
         )}
       </div>
@@ -623,12 +687,18 @@ const RecipeDetails = ({ recipeId }) => {
 
   if (!recipe) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 dark:text-gray-400 mb-4">Recipe not found</p>
+          <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-red-100 to-pink-100 dark:from-red-900/30 dark:to-pink-900/30 rounded-full flex items-center justify-center">
+            <svg className="h-12 w-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.232 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Recipe not found</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">The recipe you're looking for doesn't exist.</p>
           <button
             onClick={handleBack}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-full font-semibold shadow-xl shadow-purple-500/25 hover:shadow-2xl hover:shadow-purple-500/40 transform hover:scale-105 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
           >
             Back to Home
           </button>
@@ -637,110 +707,135 @@ const RecipeDetails = ({ recipeId }) => {
     );
   }
 
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty.toLowerCase()) {
+      case 'easy': return 'text-green-600 bg-green-100 dark:bg-green-900/30';
+      case 'medium': return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30';
+      case 'hard': return 'text-red-600 bg-red-100 dark:bg-red-900/30';
+      default: return 'text-gray-600 bg-gray-100 dark:bg-gray-800';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
           <button
             onClick={handleBack}
-            className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm px-2 py-1"
+            className="flex items-center text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-lg px-3 py-2 hover:bg-white/50 dark:hover:bg-gray-800/50 backdrop-blur-sm"
           >
-            <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to recipes
           </button>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50">
           <div className="relative">
             <img
               src={recipe.image}
               alt={recipe.title}
-              className="w-full h-64 md:h-80 object-cover"
+              className="w-full h-80 md:h-96 object-cover"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
             <button
               onClick={handleFavoriteClick}
-              className="absolute top-4 right-4 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="absolute top-6 right-6 p-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 group"
               aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             >
-              <svg className={`w-6 h-6 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-7 h-7 transition-all duration-300 ${isFavorite ? 'text-red-500 fill-current scale-110' : 'text-gray-400 group-hover:text-red-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </button>
           </div>
 
-          <div className="p-6 md:p-8">
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          <div className="p-8 md:p-10">
+            <div className="mb-8">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
                 {recipe.title}
               </h1>
               
-              <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-400 mb-4">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {recipe.time} minutes
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                <div className="flex items-center justify-center p-4 bg-purple-100 dark:bg-purple-900/30 rounded-2xl">
+                  <div className="text-center">
+                    <svg className="w-8 h-8 mx-auto mb-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">{recipe.time}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">minutes</div>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                  </svg>
-                  {recipe.rating}
+                
+                <div className="flex items-center justify-center p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-2xl">
+                  <div className="text-center">
+                    <svg className="w-8 h-8 mx-auto mb-2 text-yellow-600 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">{recipe.rating}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">rating</div>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  {recipe.servings} servings
+                
+                <div className="flex items-center justify-center p-4 bg-blue-100 dark:bg-blue-900/30 rounded-2xl">
+                  <div className="text-center">
+                    <svg className="w-8 h-8 mx-auto mb-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">{recipe.servings}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">servings</div>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                  {recipe.difficulty}
+                
+                <div className="flex items-center justify-center p-4 rounded-2xl">
+                  <div className="text-center">
+                    <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${getDifficultyColor(recipe.difficulty)}`}>
+                      {recipe.difficulty}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-8">
                 {recipe.tags.map(tag => (
-                  <span key={tag} className="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
-                    {tag}
+                  <span key={tag} className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 rounded-full">
+                    #{tag}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="grid lg:grid-cols-2 gap-10">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-3"></div>
                   Ingredients
                 </h2>
-                <ul className="space-y-2">
+                <div className="space-y-3">
                   {recipe.ingredients.map((ingredient, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></span>
+                    <div key={index} className="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                      <span className="flex-shrink-0 w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-4"></span>
                       <span className="text-gray-700 dark:text-gray-300">{ingredient}</span>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full mr-3"></div>
                   Instructions
                 </h2>
-                <ol className="space-y-4">
+                <div className="space-y-4">
                   {recipe.steps.map((step, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white text-sm font-medium rounded-full flex items-center justify-center mr-3 mt-0.5">
+                    <div key={index} className="flex items-start p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                      <span className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-bold rounded-full flex items-center justify-center mr-4 mt-0.5">
                         {index + 1}
                       </span>
-                      <span className="text-gray-700 dark:text-gray-300">{step}</span>
-                    </li>
+                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{step}</span>
+                    </div>
                   ))}
-                </ol>
+                </div>
               </div>
             </div>
           </div>
@@ -762,26 +857,42 @@ const Favorites = () => {
 
   if (favoriteRecipes.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-            Your Favorite Recipes
-          </h1>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+                Your Favorites
+              </span>
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Save your favorite recipes for quick access
+            </p>
+          </div>
           
-          <div className="text-center py-12">
-            <div className="text-gray-500 dark:text-gray-400 mb-4">
-              <svg className="mx-auto h-12 w-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              <p className="text-lg">No favorite recipes yet</p>
-              <p className="text-sm mt-1">Start exploring and add some recipes to your favorites!</p>
+          <div className="text-center py-20">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-3xl opacity-20"></div>
+              </div>
+              <div className="relative text-gray-600 dark:text-gray-400 mb-8">
+                <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full flex items-center justify-center">
+                  <svg className="h-16 w-16 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-4">No favorites yet</h3>
+                <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+                  Start exploring our amazing recipes and save your favorites by clicking the heart icon!
+                </p>
+              </div>
+              <button
+                onClick={() => navigate('home')}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-10 py-5 rounded-full font-semibold text-xl shadow-2xl shadow-purple-500/25 hover:shadow-2xl hover:shadow-purple-500/40 transform hover:scale-105 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+              >
+                Explore Recipes
+              </button>
             </div>
-            <button
-              onClick={() => navigate('home')}
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-            >
-              Browse Recipes
-            </button>
           </div>
         </div>
       </div>
@@ -789,13 +900,20 @@ const Favorites = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          Your Favorite Recipes ({favoriteRecipes.length})
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+              Your Favorites
+            </span>
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400">
+            {favoriteRecipes.length} recipe{favoriteRecipes.length !== 1 ? 's' : ''} saved
+          </p>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {favoriteRecipes.map(recipe => (
             <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
@@ -823,7 +941,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+    <div className="min-h-screen transition-colors duration-300">
       <Header />
       {renderCurrentPage()}
     </div>
