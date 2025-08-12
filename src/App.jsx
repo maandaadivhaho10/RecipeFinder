@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext, createContext } from 'react';
+import { Moon, Sun, ChefHat, Heart, Star, Clock, Users, TrendingUp, Search, Frown, HeartCrack, ArrowLeft, Timer, Tags, RotateCcw, Utensils } from 'lucide-react';
 
-// Recipe data
+// Recipe data with real images
 const recipes = [
   {
     "id": "rec_001",
     "title": "One-Pot Creamy Tomato Pasta",
-    "image": "/images/pasta.jpg",
+    "image": "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop",
     "tags": ["vegetarian", "quick"],
     "difficulty": "easy",
     "timeMinutes": 25,
@@ -28,7 +29,7 @@ const recipes = [
   {
     "id": "rec_002",
     "title": "Grilled Lemon Herb Chicken",
-    "image": "/images/lemon-chicken.jpg",
+    "image": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=400&h=300&fit=crop",
     "tags": ["grill", "protein"],
     "difficulty": "easy",
     "timeMinutes": 30,
@@ -51,7 +52,7 @@ const recipes = [
   {
     "id": "rec_003",
     "title": "Vegan Chickpea Curry",
-    "image": "/images/chickpea-curry.jpg",
+    "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop",
     "tags": ["vegan", "spicy", "comfort"],
     "difficulty": "medium",
     "timeMinutes": 35,
@@ -74,7 +75,7 @@ const recipes = [
   {
     "id": "rec_004",
     "title": "Greek Salad",
-    "image": "/images/greek-salad.jpg",
+    "image": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=300&fit=crop",
     "tags": ["salad", "quick", "fresh"],
     "difficulty": "easy",
     "timeMinutes": 15,
@@ -97,7 +98,7 @@ const recipes = [
   {
     "id": "rec_006",
     "title": "Avocado Toast with Egg",
-    "image": "/images/avocado-toast.jpg",
+    "image": "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&h=300&fit=crop",
     "tags": ["breakfast", "quick"],
     "difficulty": "easy",
     "timeMinutes": 10,
@@ -119,7 +120,7 @@ const recipes = [
   {
     "id": "rec_007",
     "title": "Garlic Butter Shrimp",
-    "image": "/images/garlic-shrimp.jpg",
+    "image": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&h=300&fit=crop",
     "tags": ["seafood", "quick"],
     "difficulty": "easy",
     "timeMinutes": 15,
@@ -142,7 +143,7 @@ const recipes = [
   {
     "id": "rec_008",
     "title": "Quinoa Buddha Bowl",
-    "image": "/images/quinoa-bowl.jpg",
+    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop",
     "tags": ["vegan", "bowl", "healthy"],
     "difficulty": "easy",
     "timeMinutes": 30,
@@ -164,7 +165,7 @@ const recipes = [
   {
     "id": "rec_009",
     "title": "Margherita Pizza",
-    "image": "/images/margherita-pizza.jpg",
+    "image": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=300&fit=crop",
     "tags": ["baking", "comfort"],
     "difficulty": "medium",
     "timeMinutes": 40,
@@ -187,7 +188,7 @@ const recipes = [
   {
     "id": "rec_010",
     "title": "Tomato Basil Soup",
-    "image": "/images/tomato-soup.jpg",
+    "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=300&fit=crop",
     "tags": ["soup", "comfort", "vegetarian"],
     "difficulty": "easy",
     "timeMinutes": 30,
@@ -210,7 +211,7 @@ const recipes = [
   {
     "id": "rec_013",
     "title": "Caprese Sandwich",
-    "image": "/images/caprese-sandwich.jpg",
+    "image": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=300&fit=crop",
     "tags": ["vegetarian", "quick", "lunch"],
     "difficulty": "easy",
     "timeMinutes": 10,
@@ -233,7 +234,7 @@ const recipes = [
   {
     "id": "rec_015",
     "title": "Pesto Zoodles",
-    "image": "/images/pesto-zoodles.jpg",
+    "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop",
     "tags": ["low-carb", "vegetarian", "quick"],
     "difficulty": "easy",
     "timeMinutes": 15,
@@ -255,7 +256,7 @@ const recipes = [
   {
     "id": "rec_021",
     "title": "Garlic Roasted Cauliflower",
-    "image": "/images/roasted-cauliflower.jpg",
+    "image": "https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&h=300&fit=crop",
     "tags": ["vegan", "side", "quick"],
     "difficulty": "easy",
     "timeMinutes": 25,
@@ -277,7 +278,7 @@ const recipes = [
   {
     "id": "rec_025",
     "title": "Berry Yogurt Parfait",
-    "image": "/images/yogurt-parfait.jpg",
+    "image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&h=300&fit=crop",
     "tags": ["breakfast", "quick", "fresh"],
     "difficulty": "easy",
     "timeMinutes": 8,
@@ -416,49 +417,53 @@ const Header = () => {
   const { currentPage, navigateToHome, navigateToFavorites } = useContext(NavigationContext);
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <header className="backdrop-blur-md bg-gradient-to-r from-fuchsia-900/80 via-purple-900/70 to-indigo-900/80 shadow-lg border-b border-white/10 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          {/* Logo / Title */}
           <button 
             onClick={navigateToHome}
-            className="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md px-2 py-1"
+            className="text-xl font-bold text-white tracking-wide hover:text-pink-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded-md px-3 py-2 flex items-center"
           >
+            <Utensils size={24} className="mr-2 text-pink-400 drop-shadow" />
             Recipe Finder
           </button>
           
-          <nav className="flex items-center space-x-4">
+          {/* Navigation */}
+          <nav className="flex items-center space-x-6">
             <button 
               onClick={navigateToHome}
-              className={`px-3 py-2 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+              className={`px-4 py-2 rounded-lg font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 ${
                 currentPage === 'home' 
-                  ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                  : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                  ? 'text-white bg-pink-500/30 border border-pink-400/40 shadow-md'
+                  : 'text-pink-200 hover:text-white hover:bg-pink-400/20'
               }`}
             >
               Home
             </button>
             <button 
               onClick={navigateToFavorites}
-              className={`px-3 py-2 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 relative ${
+              className={`px-4 py-2 rounded-lg font-medium transition-all relative ${
                 currentPage === 'favorites'
-                  ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                  : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                  ? 'text-white bg-pink-500/30 border border-pink-400/40 shadow-md'
+                  : 'text-pink-200 hover:text-white hover:bg-pink-400/20'
               }`}
             >
               Favorites
               {favorites.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-md">
                   {favorites.length}
                 </span>
               )}
             </button>
             
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="p-2 rounded-lg text-pink-200 hover:text-white hover:bg-pink-400/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400"
               aria-label="Toggle theme"
             >
-              {theme === 'light' ? '🌙' : '☀️'}
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
           </nav>
         </div>
@@ -466,7 +471,6 @@ const Header = () => {
     </header>
   );
 };
-
 // Search Bar Component
 const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selectedTags, onTagToggle, onReset }) => {
   const searchRef = useRef(null);
@@ -487,43 +491,54 @@ const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selec
   }, []);
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
-      <div className="space-y-4">
+    <div className="backdrop-blur-md bg-gradient-to-br from-white/80 to-slate-50/70 dark:from-gray-900/70 dark:to-gray-800/70 p-6 rounded-2xl shadow-lg border border-white/20 dark:border-gray-700 mb-8">
+      <div className="space-y-6">
+
         {/* Search Input */}
         <div>
-          <label htmlFor="search" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="search" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+           <Search size={16} className="mr-2 text-sky-600 dark:text-sky-400" />
+
             Search recipes
           </label>
           <input
-            ref={searchRef}
-            id="search"
-            type="text"
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search by title, ingredients, or tags..."
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-          />
+  ref={searchRef}
+  id="search"
+  type="text"
+  value={searchTerm}
+  onChange={(e) => onSearchChange(e.target.value)}
+  placeholder="Search by title, ingredients, or tags..."
+  className="w-full px-4 py-3 border border-sky-400 dark:border-sky-900 rounded-xl 
+             focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 
+             dark:bg-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-sky-300 
+             shadow-sm transition-all"
+/>
         </div>
 
         {/* Max Time Filter */}
         <div>
-          <label htmlFor="maxTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="maxTime" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+           <Timer size={16} className="mr-2 text-sky-600 dark:text-sky-400" />
             Max cooking time (minutes)
           </label>
           <input
-            id="maxTime"
-            type="number"
-            value={maxTime}
-            onChange={(e) => onMaxTimeChange(e.target.value)}
-            placeholder="e.g. 30"
-            min="1"
-            className="w-32 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-          />
+  id="maxTime"
+  type="number"
+  value={maxTime}
+  onChange={(e) => onMaxTimeChange(e.target.value)}
+  placeholder="e.g. 30"
+  min="1"
+  className="w-36 px-4 py-3 border border-sky-400 dark:border-sky-600 
+             rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 
+             focus:border-sky-500 dark:bg-gray-800 text-black dark:text-sky-200 
+             shadow-sm transition-all"
+ />
         </div>
 
         {/* Tag Chips */}
         <div>
-          <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <p className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+            <Tags size={16} className="mr-2 text-emerald-600" />
             Filter by tags
           </p>
           <div className="flex flex-wrap gap-2">
@@ -533,6 +548,7 @@ const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selec
                 tag={tag}
                 isSelected={selectedTags.includes(tag)}
                 onToggle={() => onTagToggle(tag)}
+                className="transition-all duration-200"
               />
             ))}
           </div>
@@ -540,38 +556,51 @@ const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selec
 
         {/* Reset Button */}
         {(searchTerm || maxTime || selectedTags.length > 0) && (
-          <button
-            onClick={onReset}
-            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Reset filters
-          </button>
+         <button
+  onClick={onReset}
+  className="px-5 py-2.5 text-sm font-medium text-black dark:text-sky-200 hover:text-white
+             bg-gradient-to-r from-sky-500 to-sky-600 dark:from-sky-600 dark:to-sky-700
+             rounded-xl shadow-md border border-sky-400 dark:border-sky-600
+             flex items-center transition-all duration-200
+             focus:outline-none focus:ring-2 focus:ring-sky-500"
+>
+  <RotateCcw size={16} className="mr-2" />
+  Reset filters
+</button>
         )}
       </div>
     </div>
   );
 };
 
+
 // Tag Chip Component
 const TagChip = ({ tag, isSelected, onToggle }) => {
   return (
-    <button
-      onClick={onToggle}
-      className={`px-3 py-1 text-sm rounded-full border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-        isSelected
-          ? 'bg-blue-500 text-white border-blue-500 hover:bg-blue-600'
-          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
-      }`}
-    >
-      {tag}
-    </button>
+ <button
+  onClick={onToggle}
+  className={`
+    px-4 py-2 text-sm font-semibold rounded-full border transition-all duration-200 transform
+    focus:outline-none focus:ring-2 focus:ring-sky-500
+    ${
+      isSelected
+        ? 'bg-sky-600 text-white border-sky-600 shadow-md scale-105 hover:bg-sky-700'
+        : 'bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-700 hover:bg-sky-100 dark:hover:bg-sky-800 hover:scale-105'
+    }
+  `}
+>
+  {tag}
+</button>
+
   );
 };
+
 
 // Recipe Card Component
 const RecipeCard = ({ recipe }) => {
   const { isFavorite, toggleFavorite } = useContext(FavoritesContext);
   const { navigateToRecipe } = useContext(NavigationContext);
+  const [imageError, setImageError] = useState(false);
 
   const handleFavoriteClick = useCallback((e) => {
     e.preventDefault();
@@ -583,58 +612,77 @@ const RecipeCard = ({ recipe }) => {
     navigateToRecipe(recipe.id);
   }, [recipe.id, navigateToRecipe]);
 
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+  }, []);
+
   return (
     <div 
       onClick={handleCardClick}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 group"
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 border border-slate-200 dark:border-gray-700 group overflow-hidden"
       tabIndex={0}
       role="button"
       onKeyDown={(e) => e.key === 'Enter' && handleCardClick()}
     >
       <div className="relative">
-        <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 rounded-t-lg flex items-center justify-center">
-          <span className="text-gray-500 dark:text-gray-400 text-2xl">🍽️</span>
+        <div className="h-48 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-700 dark:to-gray-600 overflow-hidden">
+          {recipe.image && !imageError ? (
+            <img 
+              src={recipe.image} 
+              alt={recipe.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              onError={handleImageError}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <ChefHat size={48} className="text-slate-400" />
+            </div>
+          )}
+          <div className="absolute top-3 left-3 px-2 py-1 bg-black/75 backdrop-blur-sm rounded-md text-white text-xs font-medium">
+            <Clock size={12} className="inline mr-1" />
+            {recipe.timeMinutes}min
+          </div>
         </div>
         <button
           onClick={handleFavoriteClick}
-          className={`absolute top-3 right-3 p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-200 
+            focus:outline-none focus:ring-2 focus:ring-sky-400 ${
+            
             isFavorite(recipe.id)
-              ? 'bg-red-500 text-white hover:bg-red-600'
-              : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
+              ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600 shadow-lg'
+              : 'bg-white/90 text-gray-600 hover:bg-white hover:text-rose-500 shadow-md'
           }`}
           aria-label={isFavorite(recipe.id) ? 'Remove from favorites' : 'Add to favorites'}
         >
-          <span className="text-lg">
-            {isFavorite(recipe.id) ? '❤️' : '🤍'}
-          </span>
+          <Heart size={18} fill={isFavorite(recipe.id) ? 'currentColor' : 'none'} />
         </button>
       </div>
       
       <div className="p-4">
-        <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
           {recipe.title}
         </h3>
         
         <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-3">
-          <span>{recipe.timeMinutes} min</span>
-          <span className="capitalize">{recipe.difficulty}</span>
+          <span className="capitalize font-medium">{recipe.difficulty}</span>
           <div className="flex items-center">
-            <span className="text-yellow-500 mr-1">⭐</span>
-            <span>{recipe.rating}</span>
+            <Star size={14} className="text-amber-500 mr-1" fill="currentColor" />
+            <span className="font-medium">{recipe.rating}</span>
           </div>
         </div>
         
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {recipe.tags?.slice(0, 3).map(tag => (
-            <span
-              key={tag}
-              className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full"
-            >
-              {tag}
-            </span>
+           <span
+  key={tag}
+  className="px-2 py-1 text-xs font-medium bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-full"
+>
+  {tag}
+</span>
+
           ))}
           {recipe.tags?.length > 3 && (
-            <span className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full">
+            <span className="px-2 py-1 text-xs font-medium bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-gray-400 rounded-full">
               +{recipe.tags.length - 3}
             </span>
           )}
@@ -739,20 +787,23 @@ const Home = () => {
       />
 
       {filteredRecipes.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <Search size={64} className="mx-auto text-gray-400 mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             No recipes match your search
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Try adjusting your filters or search terms
           </p>
           <button
-            onClick={handleReset}
-            className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Clear all filters
-          </button>
+  onClick={handleReset}
+  className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-700 text-white rounded-lg 
+             hover:from-sky-600 hover:to-sky-800 transition-all duration-200 
+             focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium shadow-sm"
+>
+  Clear all filters
+</button>
+
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -769,6 +820,7 @@ const Home = () => {
 const RecipeDetails = () => {
   const { selectedRecipeId, navigateToHome } = useContext(NavigationContext);
   const { isFavorite, toggleFavorite } = useContext(FavoritesContext);
+  const [imageError, setImageError] = useState(false);
 
   const recipe = useMemo(() => {
     return recipes.find(r => r.id === selectedRecipeId);
@@ -782,20 +834,26 @@ const RecipeDetails = () => {
     toggleFavorite(selectedRecipeId);
   }, [selectedRecipeId, toggleFavorite]);
 
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+  }, []);
+
   if (!recipe) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">😕</div>
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <Frown size={64} className="mx-auto text-gray-400 mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Recipe not found
           </h2>
           <button
-            onClick={handleBack}
-            className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Back to Home
-          </button>
+  onClick={handleBack}
+  className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-700 text-white rounded-lg 
+             hover:from-sky-600 hover:to-sky-800 transition-all duration-200 
+             focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium shadow-sm"
+>
+  Back to Home
+</button>
         </div>
       </div>
     );
@@ -806,30 +864,40 @@ const RecipeDetails = () => {
       <div className="mb-6">
         <button
           onClick={handleBack}
-          className="inline-flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
+          className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-white bg-emerald-50 dark:bg-emerald-900/20 hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-600 border border-emerald-200 dark:border-emerald-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
-          ← Back to recipes
+          <ArrowLeft size={16} className="mr-2" />
+          Back to recipes
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         {/* Header */}
         <div className="relative">
-          <div className="h-64 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
-            <span className="text-gray-500 dark:text-gray-400 text-6xl">🍽️</span>
+          <div className="h-64 bg-gray-100 dark:bg-gray-700 overflow-hidden">
+            {recipe.image && !imageError ? (
+              <img 
+                src={recipe.image} 
+                alt={recipe.title}
+                className="w-full h-full object-cover"
+                onError={handleImageError}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <ChefHat size={96} className="text-gray-400" />
+              </div>
+            )}
           </div>
           <button
             onClick={handleFavoriteClick}
             className={`absolute top-4 right-4 p-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               isFavorite(recipe.id)
                 ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
+                : 'bg-white/90 text-gray-600 hover:bg-white hover:text-red-500'
             }`}
             aria-label={isFavorite(recipe.id) ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <span className="text-2xl">
-              {isFavorite(recipe.id) ? '❤️' : '🤍'}
-            </span>
+            <Heart size={24} fill={isFavorite(recipe.id) ? 'currentColor' : 'none'} />
           </button>
         </div>
 
@@ -840,21 +908,30 @@ const RecipeDetails = () => {
               {recipe.title}
             </h1>
             
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-              <div className="flex items-center">
-                <span className="text-yellow-500 mr-1">⭐</span>
-                <span>{recipe.rating}</span>
+            <div className="flex flex-wrap items-center gap-4 text-sm">
+              <div className="flex items-center text-gray-600 dark:text-gray-400">
+                <Star size={16} className="text-yellow-500 mr-1" fill="currentColor" />
+                <span className="font-medium">{recipe.rating}</span>
               </div>
-              <span>⏱️ {recipe.timeMinutes} minutes</span>
-              <span>👥 {recipe.servings} serving{recipe.servings !== 1 ? 's' : ''}</span>
-              <span className="capitalize">📈 {recipe.difficulty}</span>
+              <div className="flex items-center text-gray-600 dark:text-gray-400">
+                <Clock size={16} className="mr-1" />
+                <span>{recipe.timeMinutes} minutes</span>
+              </div>
+              <div className="flex items-center text-gray-600 dark:text-gray-400">
+                <Users size={16} className="mr-1" />
+                <span>{recipe.servings} serving{recipe.servings !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="flex items-center text-gray-600 dark:text-gray-400 capitalize">
+                <TrendingUp size={16} className="mr-1" />
+                <span>{recipe.difficulty}</span>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-2 mt-4">
               {recipe.tags?.map(tag => (
                 <span
                   key={tag}
-                  className="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full"
+                  className="px-3 py-1.5 text-sm font-medium bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full"
                 >
                   {tag}
                 </span>
@@ -862,7 +939,7 @@ const RecipeDetails = () => {
               {recipe.dietary?.map(diet => (
                 <span
                   key={diet}
-                  className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full"
+                  className="px-3 py-1.5 text-sm font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-full"
                 >
                   {diet}
                 </span>
@@ -893,26 +970,26 @@ const RecipeDetails = () => {
                     Nutrition (per serving)
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                      <div className="text-lg font-bold text-gray-900 dark:text-white">
+                    <div className="text-center p-3 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
+                      <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
                         {recipe.nutrition.calories}
                       </div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">Calories</div>
                     </div>
-                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                      <div className="text-lg font-bold text-gray-900 dark:text-white">
+                    <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                      <div className="text-lg font-bold text-blue-700 dark:text-blue-300">
                         {recipe.nutrition.protein}
                       </div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">Protein</div>
                     </div>
-                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                      <div className="text-lg font-bold text-gray-900 dark:text-white">
+                    <div className="text-center p-3 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
+                      <div className="text-lg font-bold text-amber-700 dark:text-amber-300">
                         {recipe.nutrition.carbs}
                       </div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">Carbs</div>
                     </div>
-                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                      <div className="text-lg font-bold text-gray-900 dark:text-white">
+                    <div className="text-center p-3 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 rounded-lg border border-rose-100 dark:border-rose-800">
+                      <div className="text-lg font-bold text-rose-700 dark:text-rose-300">
                         {recipe.nutrition.fat}
                       </div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">Fat</div>
@@ -930,7 +1007,7 @@ const RecipeDetails = () => {
               <ol className="space-y-4">
                 {recipe.steps?.map((step, index) => (
                   <li key={index} className="flex">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white text-sm font-bold rounded-full flex items-center justify-center mr-4 mt-0.5">
+                    <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-r from-emerald-300 to-teal-600 text-white text-sm font-bold rounded-full flex items-center justify-center mr-4 mt-0.5 shadow-sm">
                       {index + 1}
                     </span>
                     <span className="text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -959,23 +1036,27 @@ const Favorites = () => {
   if (favoriteRecipes.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 flex items-center">
           Your Favorite Recipes
+          <Heart size={32} className="ml-3 text-red-500" fill="currentColor" />
         </h1>
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">💔</div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <HeartCrack size={64} className="mx-auto text-gray-400 mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             No favorite recipes yet
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Start browsing and save recipes you love!
           </p>
           <button
-            onClick={navigateToHome}
-            className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Browse recipes
-          </button>
+  onClick={navigateToHome}
+  className="px-6 py-2.5 bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg 
+             hover:from-blue-800 hover:to-blue-600 transition-all duration-200 
+             focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium shadow-sm"
+>
+  Browse recipes
+</button>
+
         </div>
       </div>
     );
@@ -983,8 +1064,9 @@ const Favorites = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 flex items-center">
         Your Favorite Recipes ({favoriteRecipes.length})
+        <Heart size={32} className="ml-3 text-red-500" fill="currentColor" />
       </h1>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -1009,7 +1091,7 @@ const App = () => {
   );
 };
 
-// App Content Component for consuming navigation context
+// App Content Component
 const AppContent = () => {
   const { currentPage } = useContext(NavigationContext);
 
@@ -1027,13 +1109,17 @@ const AppContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+  <div className="min-h-screen bg-gradient-to-br from-black-900 via-blue-50/50 to-emerald-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 transition-colors">
+    {/* Optional: add a subtle backdrop blur for cohesion */}
+    <div className="backdrop-blur-sm">
       <Header />
-      <main>
+      <main className="p-4 md:p-8">
         {getCurrentPageComponent()}
       </main>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default App;
