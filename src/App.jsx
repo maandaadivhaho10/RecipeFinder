@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext, createContext } from 'react';
-import { Moon, Sun, ChefHat, Heart, Star, Clock, Users, TrendingUp, Search, Frown, HeartCrack, ArrowLeft, Timer, Tags, RotateCcw, Utensils } from 'lucide-react';
+import { Moon, Sun, ChefHat, Heart, Star, Clock, Users, TrendingUp, Search, Frown, HeartCrack, ArrowLeft, Timer, Tags, RotateCcw, Utensils, Menu, X } from 'lucide-react';
 
 // Recipe data with real images
 const recipes = [
@@ -306,14 +306,6 @@ const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    const savedTheme = JSON.parse(window.localStorage?.getItem('recipe-finder-theme') || '"light"');
-    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
-      setTheme(savedTheme);
-    }
-  }, []);
-
-  useEffect(() => {
-    window.localStorage?.setItem('recipe-finder-theme', JSON.stringify(theme));
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -337,24 +329,6 @@ const FavoritesContext = createContext();
 
 const FavoritesProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
-
-  useEffect(() => {
-    const savedFavorites = window.localStorage?.getItem('recipe-finder-favorites');
-    if (savedFavorites) {
-      try {
-        const parsed = JSON.parse(savedFavorites);
-        if (Array.isArray(parsed)) {
-          setFavorites(parsed);
-        }
-      } catch (e) {
-        console.error('Error parsing favorites from localStorage:', e);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    window.localStorage?.setItem('recipe-finder-favorites', JSON.stringify(favorites));
-  }, [favorites]);
 
   const toggleFavorite = useCallback((recipeId) => {
     setFavorites(prev => 
@@ -415,62 +389,137 @@ const Header = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
   const { favorites } = useContext(FavoritesContext);
   const { currentPage, navigateToHome, navigateToFavorites } = useContext(NavigationContext);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(prev => !prev);
+  }, []);
+
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
+
+  const handleHomeClick = useCallback(() => {
+    navigateToHome();
+    closeMobileMenu();
+  }, [navigateToHome, closeMobileMenu]);
+
+  const handleFavoritesClick = useCallback(() => {
+    navigateToFavorites();
+    closeMobileMenu();
+  }, [navigateToFavorites, closeMobileMenu]);
 
   return (
-    <header className="backdrop-blur-xl bg-gradient-to-r from-black via-gray-900 to-gray-800 dark:from-gray-900 dark:via-black dark:to-gray-900 shadow-2xl border-b border-gray-700 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo / Title */}
-          <button 
-            onClick={navigateToHome}
-            className="text-2xl font-bold text-white tracking-wide hover:text-gray-200 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg px-4 py-3 flex items-center group"
-          >
-            <Utensils size={28} className="mr-3 text-gray-300 drop-shadow-lg group-hover:rotate-12 transition-transform duration-300" />
-            <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Recipe Finder
-            </span>
-          </button>
-          
-          {/* Navigation */}
-          <nav className="flex items-center space-x-8">
+    <>
+      <header className="backdrop-blur-xl bg-gradient-to-r from-black via-gray-900 to-gray-800 dark:from-gray-900 dark:via-black dark:to-gray-900 shadow-2xl border-b border-gray-700 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 md:h-20">
+            {/* Logo / Title */}
             <button 
               onClick={navigateToHome}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white shadow-lg ${
-                currentPage === 'home' 
-                  ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300 shadow-white/25'
-                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-gray-700/40 border border-gray-600 hover:border-gray-500'
-              }`}
+              className="text-xl md:text-2xl font-bold text-white tracking-wide hover:text-gray-200 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg px-3 md:px-4 py-2 md:py-3 flex items-center group"
             >
-              Home
-            </button>
-            <button 
-              onClick={navigateToFavorites}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 relative ${
-                currentPage === 'favorites'
-                  ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300 shadow-lg shadow-white/25'
-                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-gray-700/40 border border-gray-600 hover:border-gray-500'
-              }`}
-            >
-              Favorites
-              {favorites.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-gray-800 to-black text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg animate-pulse">
-                  {favorites.length}
-                </span>
-              )}
+              <Utensils size={24} className="mr-2 md:mr-3 text-gray-300 drop-shadow-lg group-hover:rotate-12 transition-transform duration-300" />
+              <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                Recipe Finder
+              </span>
             </button>
             
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/40 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white border border-gray-600 hover:border-gray-500"
-              aria-label="Toggle theme"
-            >
-              {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
-            </button>
-          </nav>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <button 
+                onClick={navigateToHome}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white shadow-lg ${
+                  currentPage === 'home' 
+                    ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300 shadow-white/25'
+                    : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-gray-700/40 border border-gray-600 hover:border-gray-500'
+                }`}
+              >
+                Home
+              </button>
+              <button 
+                onClick={navigateToFavorites}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 relative ${
+                  currentPage === 'favorites'
+                    ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300 shadow-lg shadow-white/25'
+                    : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-gray-700/40 border border-gray-600 hover:border-gray-500'
+                }`}
+              >
+                Favorites
+                {favorites.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-gray-800 to-black text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg animate-pulse">
+                    {favorites.length}
+                  </span>
+                )}
+              </button>
+              
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/40 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white border border-gray-600 hover:border-gray-500"
+                aria-label="Toggle theme"
+              >
+                {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
+              </button>
+            </nav>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center space-x-4">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800/40 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                aria-label="Toggle theme"
+              >
+                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+              </button>
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800/40 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                aria-label="Toggle mobile menu"
+              >
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={closeMobileMenu} />
+          <div className="fixed top-16 right-0 w-64 h-full bg-gradient-to-b from-black via-gray-900 to-gray-800 dark:from-gray-900 dark:via-black dark:to-gray-900 shadow-2xl border-l border-gray-700">
+            <nav className="flex flex-col p-6 space-y-4">
+              <button 
+                onClick={handleHomeClick}
+                className={`w-full text-left px-4 py-3 rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                  currentPage === 'home' 
+                    ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-800/40 border border-gray-600'
+                }`}
+              >
+                Home
+              </button>
+              <button 
+                onClick={handleFavoritesClick}
+                className={`w-full text-left px-4 py-3 rounded-xl font-semibold transition-all duration-300 relative ${
+                  currentPage === 'favorites'
+                    ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-800/40 border border-gray-600'
+                }`}
+              >
+                Favorites
+                {favorites.length > 0 && (
+                  <span className="absolute top-2 right-4 bg-gradient-to-r from-gray-800 to-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                    {favorites.length}
+                  </span>
+                )}
+              </button>
+            </nav>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
