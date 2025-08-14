@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, useContext, createContext } from 'react';
+import  { useState, useEffect, useRef, useMemo, useCallback, useContext, createContext } from 'react';
 import { Moon, Sun, ChefHat, Heart, Star, Clock, Users, TrendingUp, Search, Frown, HeartCrack, ArrowLeft, Timer, Tags, RotateCcw, Utensils, Menu, X } from 'lucide-react';
 
 // Recipe data with real images
@@ -420,9 +420,17 @@ const Header = () => {
               className="text-xl md:text-2xl font-bold text-white tracking-wide hover:text-gray-200 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg px-3 md:px-4 py-2 md:py-3 flex items-center group"
             >
               <Utensils size={24} className="mr-2 md:mr-3 text-gray-300 drop-shadow-lg group-hover:rotate-12 transition-transform duration-300" />
-              <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Recipe Finder
-              </span>
+            <span
+  className="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800
+             bg-clip-text text-transparent
+             text-5xl font-extrabold tracking-wide
+             drop-shadow-md
+             hover:from-blue-800 hover:to-blue-400
+             transition-all duration-500 ease-in-out"
+>
+  SpoonSense
+</span>
+
             </button>
             
             {/* Desktop Navigation */}
