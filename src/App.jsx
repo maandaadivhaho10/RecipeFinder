@@ -6,7 +6,7 @@ const recipes = [
   {
     "id": "rec_001",
     "title": "One-Pot Creamy Tomato Pasta",
-    "image": "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop",
+    "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop",
     "tags": ["vegetarian", "quick"],
     "difficulty": "easy",
     "timeMinutes": 25,
