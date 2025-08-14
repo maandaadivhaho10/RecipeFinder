@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useContext } from 'react';
 import { ChefHat, Heart, Star, Clock, Users, TrendingUp, ArrowLeft, Frown } from 'lucide-react';
 import { NavigationContext } from '../contexts/NavigationContext';
 import { FavoritesContext } from '../contexts/FavoritesContext';
-import recipes from '../data/recipes.json';
+import recipes from "../data/recipes.json";
 
 const RecipeDetails = () => {
   const { selectedRecipeId, navigateToHome } = useContext(NavigationContext);
