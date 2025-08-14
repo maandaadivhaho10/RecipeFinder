@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { Search } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import RecipeCard from '../components/RecipeCard';
-import recipes from '../data/recipes.json';
+import recipes from '../data/recipess.json';
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');

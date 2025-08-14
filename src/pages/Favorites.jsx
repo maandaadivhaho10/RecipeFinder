@@ -3,7 +3,7 @@ import { Heart, HeartCrack } from 'lucide-react';
 import { FavoritesContext } from '../contexts/FavoritesContext';
 import { NavigationContext } from '../contexts/NavigationContext';
 import RecipeCard from '../components/RecipeCard';
-import recipes from '../data/recipes.json';
+import recipes from '../data/recipess.json';
 
 const Favorites = () => {
   const { favorites } = useContext(FavoritesContext);
