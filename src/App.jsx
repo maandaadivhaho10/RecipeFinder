@@ -306,14 +306,14 @@ const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('recipe-finder-theme');
+    const savedTheme = JSON.parse(window.localStorage?.getItem('recipe-finder-theme') || '"light"');
     if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
       setTheme(savedTheme);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('recipe-finder-theme', theme);
+    window.localStorage?.setItem('recipe-finder-theme', JSON.stringify(theme));
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -339,7 +339,7 @@ const FavoritesProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-    const savedFavorites = localStorage.getItem('recipe-finder-favorites');
+    const savedFavorites = window.localStorage?.getItem('recipe-finder-favorites');
     if (savedFavorites) {
       try {
         const parsed = JSON.parse(savedFavorites);
@@ -353,7 +353,7 @@ const FavoritesProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('recipe-finder-favorites', JSON.stringify(favorites));
+    window.localStorage?.setItem('recipe-finder-favorites', JSON.stringify(favorites));
   }, [favorites]);
 
   const toggleFavorite = useCallback((recipeId) => {
@@ -417,41 +417,43 @@ const Header = () => {
   const { currentPage, navigateToHome, navigateToFavorites } = useContext(NavigationContext);
 
   return (
-    <header className="backdrop-blur-md bg-gradient-to-r from-fuchsia-900/80 via-purple-900/70 to-indigo-900/80 shadow-lg border-b border-white/10 dark:border-gray-700">
+    <header className="backdrop-blur-xl bg-gradient-to-r from-black via-gray-900 to-gray-800 dark:from-gray-900 dark:via-black dark:to-gray-900 shadow-2xl border-b border-gray-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo / Title */}
           <button 
             onClick={navigateToHome}
-            className="text-xl font-bold text-white tracking-wide hover:text-pink-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded-md px-3 py-2 flex items-center"
+            className="text-2xl font-bold text-white tracking-wide hover:text-gray-200 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg px-4 py-3 flex items-center group"
           >
-            <Utensils size={24} className="mr-2 text-pink-400 drop-shadow" />
-            Recipe Finder
+            <Utensils size={28} className="mr-3 text-gray-300 drop-shadow-lg group-hover:rotate-12 transition-transform duration-300" />
+            <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              Recipe Finder
+            </span>
           </button>
           
           {/* Navigation */}
-          <nav className="flex items-center space-x-6">
+          <nav className="flex items-center space-x-8">
             <button 
               onClick={navigateToHome}
-              className={`px-4 py-2 rounded-lg font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 ${
+              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white shadow-lg ${
                 currentPage === 'home' 
-                  ? 'text-white bg-pink-500/30 border border-pink-400/40 shadow-md'
-                  : 'text-pink-200 hover:text-white hover:bg-pink-400/20'
+                  ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300 shadow-white/25'
+                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-gray-700/40 border border-gray-600 hover:border-gray-500'
               }`}
             >
               Home
             </button>
             <button 
               onClick={navigateToFavorites}
-              className={`px-4 py-2 rounded-lg font-medium transition-all relative ${
+              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 relative ${
                 currentPage === 'favorites'
-                  ? 'text-white bg-pink-500/30 border border-pink-400/40 shadow-md'
-                  : 'text-pink-200 hover:text-white hover:bg-pink-400/20'
+                  ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300 shadow-lg shadow-white/25'
+                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-gray-700/40 border border-gray-600 hover:border-gray-500'
               }`}
             >
               Favorites
               {favorites.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-md">
+                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-gray-800 to-black text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg animate-pulse">
                   {favorites.length}
                 </span>
               )}
@@ -460,10 +462,10 @@ const Header = () => {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-pink-200 hover:text-white hover:bg-pink-400/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400"
+              className="p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/40 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white border border-gray-600 hover:border-gray-500"
               aria-label="Toggle theme"
             >
-              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+              {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
             </button>
           </nav>
         </div>
@@ -471,6 +473,7 @@ const Header = () => {
     </header>
   );
 };
+
 // Search Bar Component
 const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selectedTags, onTagToggle, onReset }) => {
   const searchRef = useRef(null);
@@ -491,64 +494,62 @@ const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selec
   }, []);
 
   return (
-    <div className="backdrop-blur-md bg-gradient-to-br from-white/80 to-slate-50/70 dark:from-gray-900/70 dark:to-gray-800/70 p-6 rounded-2xl shadow-lg border border-white/20 dark:border-gray-700 mb-8">
-      <div className="space-y-6">
-
+    <div className="backdrop-blur-xl bg-gradient-to-br from-white/95 to-gray-100/90 dark:from-gray-900/95 dark:to-black/80 p-8 rounded-3xl shadow-2xl border border-gray-300 dark:border-gray-700 mb-10">
+      <div className="space-y-8">
         {/* Search Input */}
         <div>
-          <label htmlFor="search" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
-           <Search size={16} className="mr-2 text-sky-600 dark:text-sky-400" />
-
+          <label htmlFor="search" className="block text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+            <Search size={20} className="mr-3 text-gray-600 dark:text-gray-400" />
             Search recipes
           </label>
           <input
-  ref={searchRef}
-  id="search"
-  type="text"
-  value={searchTerm}
-  onChange={(e) => onSearchChange(e.target.value)}
-  placeholder="Search by title, ingredients, or tags..."
-  className="w-full px-4 py-3 border border-sky-400 dark:border-sky-900 rounded-xl 
-             focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 
-             dark:bg-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-sky-300 
-             shadow-sm transition-all"
-/>
+            ref={searchRef}
+            id="search"
+            type="text"
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search by title, ingredients, or tags..."
+            className="w-full px-6 py-4 border-2 border-gray-400 dark:border-gray-600 rounded-2xl 
+                       focus:outline-none focus:ring-4 focus:ring-gray-300/50 focus:border-gray-600 
+                       dark:bg-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 
+                       shadow-lg transition-all duration-300 text-lg bg-white dark:bg-gray-800"
+          />
         </div>
 
         {/* Max Time Filter */}
         <div>
-          <label htmlFor="maxTime" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
-           <Timer size={16} className="mr-2 text-sky-600 dark:text-sky-400" />
+          <label htmlFor="maxTime" className="block text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+            <Timer size={20} className="mr-3 text-gray-600 dark:text-gray-400" />
             Max cooking time (minutes)
           </label>
           <input
-  id="maxTime"
-  type="number"
-  value={maxTime}
-  onChange={(e) => onMaxTimeChange(e.target.value)}
-  placeholder="e.g. 30"
-  min="1"
-  className="w-36 px-4 py-3 border border-sky-400 dark:border-sky-600 
-             rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 
-             focus:border-sky-500 dark:bg-gray-800 text-black dark:text-sky-200 
-             shadow-sm transition-all"
- />
+            id="maxTime"
+            type="number"
+            value={maxTime}
+            onChange={(e) => onMaxTimeChange(e.target.value)}
+            placeholder="e.g. 30"
+            min="1"
+            className="w-48 px-6 py-4 border-2 border-gray-400 dark:border-gray-600 
+                       rounded-2xl focus:outline-none focus:ring-4 focus:ring-gray-300/50 
+                       focus:border-gray-600 dark:bg-gray-800 text-gray-900 dark:text-gray-100 
+                       shadow-lg transition-all duration-300 text-lg bg-white dark:bg-gray-800"
+          />
         </div>
 
         {/* Tag Chips */}
         <div>
-          <p className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-            <Tags size={16} className="mr-2 text-emerald-600" />
+          <p className="block text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+            <Tags size={20} className="mr-3 text-gray-600 dark:text-gray-400" />
             Filter by tags
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {allTags.map(tag => (
               <TagChip
                 key={tag}
                 tag={tag}
                 isSelected={selectedTags.includes(tag)}
                 onToggle={() => onTagToggle(tag)}
-                className="transition-all duration-200"
+                className="transition-all duration-300"
               />
             ))}
           </div>
@@ -556,45 +557,42 @@ const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selec
 
         {/* Reset Button */}
         {(searchTerm || maxTime || selectedTags.length > 0) && (
-         <button
-  onClick={onReset}
-  className="px-5 py-2.5 text-sm font-medium text-black dark:text-sky-200 hover:text-white
-             bg-gradient-to-r from-sky-500 to-sky-600 dark:from-sky-600 dark:to-sky-700
-             rounded-xl shadow-md border border-sky-400 dark:border-sky-600
-             flex items-center transition-all duration-200
-             focus:outline-none focus:ring-2 focus:ring-sky-500"
->
-  <RotateCcw size={16} className="mr-2" />
-  Reset filters
-</button>
+          <button
+            onClick={onReset}
+            className="px-8 py-4 text-lg font-bold text-white
+                       bg-gradient-to-r from-gray-700 to-black hover:from-gray-800 hover:to-gray-900
+                       rounded-2xl shadow-xl border-2 border-gray-600 hover:border-gray-500
+                       flex items-center transition-all duration-300 transform hover:scale-105
+                       focus:outline-none focus:ring-4 focus:ring-gray-400"
+          >
+            <RotateCcw size={20} className="mr-3" />
+            Reset filters
+          </button>
         )}
       </div>
     </div>
   );
 };
 
-
 // Tag Chip Component
 const TagChip = ({ tag, isSelected, onToggle }) => {
   return (
- <button
-  onClick={onToggle}
-  className={`
-    px-4 py-2 text-sm font-semibold rounded-full border transition-all duration-200 transform
-    focus:outline-none focus:ring-2 focus:ring-sky-500
-    ${
-      isSelected
-        ? 'bg-sky-600 text-white border-sky-600 shadow-md scale-105 hover:bg-sky-700'
-        : 'bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-700 hover:bg-sky-100 dark:hover:bg-sky-800 hover:scale-105'
-    }
-  `}
->
-  {tag}
-</button>
-
+    <button
+      onClick={onToggle}
+      className={`
+        px-5 py-3 text-sm font-bold rounded-2xl border-2 transition-all duration-300 transform
+        focus:outline-none focus:ring-4 focus:ring-gray-400/50 shadow-lg
+        ${
+          isSelected
+            ? 'bg-gradient-to-r from-gray-800 to-black text-white border-gray-600 shadow-gray-400/50 scale-105 hover:from-gray-900 hover:to-gray-800'
+            : 'bg-gradient-to-r from-white to-gray-100 dark:from-gray-800 dark:to-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 hover:scale-105'
+        }
+      `}
+    >
+      {tag}
+    </button>
   );
 };
-
 
 // Recipe Card Component
 const RecipeCard = ({ recipe }) => {
@@ -619,70 +617,70 @@ const RecipeCard = ({ recipe }) => {
   return (
     <div 
       onClick={handleCardClick}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 border border-slate-200 dark:border-gray-700 group overflow-hidden"
+      className="bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer focus:outline-none focus:ring-4 focus:ring-gray-400 border-2 border-gray-200 dark:border-gray-700 group overflow-hidden transform hover:scale-105"
       tabIndex={0}
       role="button"
       onKeyDown={(e) => e.key === 'Enter' && handleCardClick()}
     >
       <div className="relative">
-        <div className="h-48 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-700 dark:to-gray-600 overflow-hidden">
+        <div className="h-56 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
           {recipe.image && !imageError ? (
             <img 
               src={recipe.image} 
               alt={recipe.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               onError={handleImageError}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <ChefHat size={48} className="text-slate-400" />
+              <ChefHat size={64} className="text-gray-500" />
             </div>
           )}
-          <div className="absolute top-3 left-3 px-2 py-1 bg-black/75 backdrop-blur-sm rounded-md text-white text-xs font-medium">
-            <Clock size={12} className="inline mr-1" />
+          <div className="absolute top-4 left-4 px-4 py-2 bg-gradient-to-r from-black/90 to-gray-800/90 backdrop-blur-sm rounded-xl text-white text-sm font-bold shadow-lg">
+            <Clock size={14} className="inline mr-2" />
             {recipe.timeMinutes}min
           </div>
         </div>
         <button
           onClick={handleFavoriteClick}
-          className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-200 
-            focus:outline-none focus:ring-2 focus:ring-sky-400 ${
-            
+          className={`absolute top-4 right-4 p-3 rounded-2xl transition-all duration-300 transform hover:scale-110
+            focus:outline-none focus:ring-4 focus:ring-gray-400/50 shadow-xl ${
             isFavorite(recipe.id)
-              ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600 shadow-lg'
-              : 'bg-white/90 text-gray-600 hover:bg-white hover:text-rose-500 shadow-md'
+              ? 'bg-gradient-to-r from-gray-800 to-black text-white hover:from-gray-900 hover:to-gray-800'
+              : 'bg-white/95 text-gray-700 hover:bg-gray-100 hover:text-black border-2 border-gray-300'
           }`}
           aria-label={isFavorite(recipe.id) ? 'Remove from favorites' : 'Add to favorites'}
         >
-          <Heart size={18} fill={isFavorite(recipe.id) ? 'currentColor' : 'none'} />
+          <Heart size={20} fill={isFavorite(recipe.id) ? 'currentColor' : 'none'} />
         </button>
       </div>
       
-      <div className="p-4">
-        <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+      <div className="p-6">
+        <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100 mb-3 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
           {recipe.title}
         </h3>
         
-        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-3">
-          <span className="capitalize font-medium">{recipe.difficulty}</span>
-          <div className="flex items-center">
-            <Star size={14} className="text-amber-500 mr-1" fill="currentColor" />
-            <span className="font-medium">{recipe.rating}</span>
+        <div className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300 mb-4">
+          <span className="capitalize font-bold text-base bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-xl">
+            {recipe.difficulty}
+          </span>
+          <div className="flex items-center bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 px-3 py-1 rounded-xl">
+            <Star size={16} className="text-gray-600 dark:text-gray-400 mr-1" fill="currentColor" />
+            <span className="font-bold text-gray-800 dark:text-gray-200">{recipe.rating}</span>
           </div>
         </div>
         
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {recipe.tags?.slice(0, 3).map(tag => (
-           <span
-  key={tag}
-  className="px-2 py-1 text-xs font-medium bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-full"
->
-  {tag}
-</span>
-
+            <span
+              key={tag}
+              className="px-3 py-2 text-xs font-bold bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 text-gray-800 dark:text-gray-200 rounded-xl shadow-md"
+            >
+              {tag}
+            </span>
           ))}
           {recipe.tags?.length > 3 && (
-            <span className="px-2 py-1 text-xs font-medium bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-gray-400 rounded-full">
+            <span className="px-3 py-2 text-xs font-bold bg-gradient-to-r from-gray-400 to-gray-500 dark:from-gray-500 dark:to-gray-600 text-white rounded-xl shadow-md">
               +{recipe.tags.length - 3}
             </span>
           )}
@@ -787,26 +785,25 @@ const Home = () => {
       />
 
       {filteredRecipes.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <Search size={64} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        <div className="text-center py-16 bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl border-2 border-gray-300 dark:border-gray-700 shadow-2xl">
+          <Search size={80} className="mx-auto text-gray-500 mb-6" />
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             No recipes match your search
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-gray-700 dark:text-gray-300 mb-8 text-lg">
             Try adjusting your filters or search terms
           </p>
           <button
-  onClick={handleReset}
-  className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-700 text-white rounded-lg 
-             hover:from-sky-600 hover:to-sky-800 transition-all duration-200 
-             focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium shadow-sm"
->
-  Clear all filters
-</button>
-
+            onClick={handleReset}
+            className="px-8 py-4 bg-gradient-to-r from-gray-700 to-black text-white rounded-2xl 
+                       hover:from-gray-800 hover:to-gray-900 transition-all duration-300 transform hover:scale-105
+                       focus:outline-none focus:ring-4 focus:ring-gray-400 font-bold shadow-xl text-lg"
+          >
+            Clear all filters
+          </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredRecipes.map(recipe => (
             <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
@@ -841,40 +838,40 @@ const RecipeDetails = () => {
   if (!recipe) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <Frown size={64} className="mx-auto text-gray-400 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="text-center py-16 bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl border-2 border-gray-300 dark:border-gray-700 shadow-2xl">
+          <Frown size={80} className="mx-auto text-gray-500 mb-6" />
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             Recipe not found
           </h2>
           <button
-  onClick={handleBack}
-  className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-700 text-white rounded-lg 
-             hover:from-sky-600 hover:to-sky-800 transition-all duration-200 
-             focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium shadow-sm"
->
-  Back to Home
-</button>
+            onClick={handleBack}
+            className="px-8 py-4 bg-gradient-to-r from-gray-700 to-black text-white rounded-2xl 
+                       hover:from-gray-800 hover:to-gray-900 transition-all duration-300 transform hover:scale-105
+                       focus:outline-none focus:ring-4 focus:ring-gray-400 font-bold shadow-xl text-lg"
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
         <button
           onClick={handleBack}
-          className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-white bg-emerald-50 dark:bg-emerald-900/20 hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-600 border border-emerald-200 dark:border-emerald-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="inline-flex items-center px-6 py-4 text-lg font-bold text-gray-800 dark:text-gray-200 hover:text-white bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 hover:from-gray-600 hover:to-black border-2 border-gray-400 dark:border-gray-600 rounded-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-400 shadow-xl"
         >
-          <ArrowLeft size={16} className="mr-2" />
+          <ArrowLeft size={20} className="mr-3" />
           Back to recipes
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl border-2 border-gray-300 dark:border-gray-700 overflow-hidden">
         {/* Header */}
         <div className="relative">
-          <div className="h-64 bg-gray-100 dark:bg-gray-700 overflow-hidden">
+          <div className="h-80 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
             {recipe.image && !imageError ? (
               <img 
                 src={recipe.image} 
@@ -884,54 +881,54 @@ const RecipeDetails = () => {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <ChefHat size={96} className="text-gray-400" />
+                <ChefHat size={120} className="text-gray-500" />
               </div>
             )}
           </div>
           <button
             onClick={handleFavoriteClick}
-            className={`absolute top-4 right-4 p-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            className={`absolute top-6 right-6 p-4 rounded-2xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-gray-400/50 shadow-2xl ${
               isFavorite(recipe.id)
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-white/90 text-gray-600 hover:bg-white hover:text-red-500'
+                ? 'bg-gradient-to-r from-gray-800 to-black text-white hover:from-gray-900 hover:to-gray-800'
+                : 'bg-white/95 text-gray-700 hover:bg-gray-100 hover:text-black border-2 border-gray-300'
             }`}
             aria-label={isFavorite(recipe.id) ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <Heart size={24} fill={isFavorite(recipe.id) ? 'currentColor' : 'none'} />
+            <Heart size={28} fill={isFavorite(recipe.id) ? 'currentColor' : 'none'} />
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-8">
           {/* Title and Meta */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6 bg-gradient-to-r from-gray-900 to-black dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
               {recipe.title}
             </h1>
             
-            <div className="flex flex-wrap items-center gap-4 text-sm">
-              <div className="flex items-center text-gray-600 dark:text-gray-400">
-                <Star size={16} className="text-yellow-500 mr-1" fill="currentColor" />
-                <span className="font-medium">{recipe.rating}</span>
+            <div className="flex flex-wrap items-center gap-6 text-lg">
+              <div className="flex items-center bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 px-4 py-2 rounded-xl shadow-lg">
+                <Star size={20} className="text-gray-600 dark:text-gray-400 mr-2" fill="currentColor" />
+                <span className="font-bold text-gray-800 dark:text-gray-200">{recipe.rating}</span>
               </div>
-              <div className="flex items-center text-gray-600 dark:text-gray-400">
-                <Clock size={16} className="mr-1" />
-                <span>{recipe.timeMinutes} minutes</span>
+              <div className="flex items-center bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 px-4 py-2 rounded-xl shadow-lg">
+                <Clock size={20} className="mr-2 text-gray-600 dark:text-gray-400" />
+                <span className="font-bold text-gray-800 dark:text-gray-200">{recipe.timeMinutes} minutes</span>
               </div>
-              <div className="flex items-center text-gray-600 dark:text-gray-400">
-                <Users size={16} className="mr-1" />
-                <span>{recipe.servings} serving{recipe.servings !== 1 ? 's' : ''}</span>
+              <div className="flex items-center bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 px-4 py-2 rounded-xl shadow-lg">
+                <Users size={20} className="mr-2 text-gray-600 dark:text-gray-400" />
+                <span className="font-bold text-gray-800 dark:text-gray-200">{recipe.servings} serving{recipe.servings !== 1 ? 's' : ''}</span>
               </div>
-              <div className="flex items-center text-gray-600 dark:text-gray-400 capitalize">
-                <TrendingUp size={16} className="mr-1" />
-                <span>{recipe.difficulty}</span>
+              <div className="flex items-center bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 px-4 py-2 rounded-xl shadow-lg capitalize">
+                <TrendingUp size={20} className="mr-2 text-gray-600 dark:text-gray-400" />
+                <span className="font-bold text-gray-800 dark:text-gray-200">{recipe.difficulty}</span>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 mt-4">
+            <div className="flex flex-wrap gap-3 mt-6">
               {recipe.tags?.map(tag => (
                 <span
                   key={tag}
-                  className="px-3 py-1.5 text-sm font-medium bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full"
+                  className="px-4 py-2 text-sm font-bold bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 text-gray-800 dark:text-gray-200 rounded-xl shadow-lg"
                 >
                   {tag}
                 </span>
@@ -939,7 +936,7 @@ const RecipeDetails = () => {
               {recipe.dietary?.map(diet => (
                 <span
                   key={diet}
-                  className="px-3 py-1.5 text-sm font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-full"
+                  className="px-4 py-2 text-sm font-bold bg-gradient-to-r from-gray-400 to-gray-500 dark:from-gray-500 dark:to-gray-600 text-white rounded-xl shadow-lg"
                 >
                   {diet}
                 </span>
@@ -948,51 +945,51 @@ const RecipeDetails = () => {
           </div>
 
           {/* Two Column Layout */}
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-10">
             {/* Ingredients */}
             <div className="lg:col-span-1">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 bg-gradient-to-r from-gray-900 to-black dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
                 Ingredients
               </h2>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {recipe.ingredients?.map((ingredient, index) => (
-                  <li key={index} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-700 dark:text-gray-300">{ingredient.name}</span>
-                    <span className="text-gray-500 dark:text-gray-400 font-medium">{ingredient.quantity}</span>
+                  <li key={index} className="flex justify-between items-center py-3 px-4 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md">
+                    <span className="text-gray-800 dark:text-gray-200 font-semibold">{ingredient.name}</span>
+                    <span className="text-gray-600 dark:text-gray-400 font-bold">{ingredient.quantity}</span>
                   </li>
                 ))}
               </ul>
 
               {/* Nutrition */}
               {recipe.nutrition && (
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 bg-gradient-to-r from-gray-900 to-black dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
                     Nutrition (per serving)
                   </h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="text-center p-3 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
-                      <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-2xl border-2 border-gray-400 dark:border-gray-600 shadow-lg">
+                      <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                         {recipe.nutrition.calories}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Calories</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Calories</div>
                     </div>
-                    <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
-                      <div className="text-lg font-bold text-blue-700 dark:text-blue-300">
+                    <div className="text-center p-4 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-2xl border-2 border-gray-400 dark:border-gray-600 shadow-lg">
+                      <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                         {recipe.nutrition.protein}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Protein</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Protein</div>
                     </div>
-                    <div className="text-center p-3 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
-                      <div className="text-lg font-bold text-amber-700 dark:text-amber-300">
+                    <div className="text-center p-4 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-2xl border-2 border-gray-400 dark:border-gray-600 shadow-lg">
+                      <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                         {recipe.nutrition.carbs}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Carbs</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Carbs</div>
                     </div>
-                    <div className="text-center p-3 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 rounded-lg border border-rose-100 dark:border-rose-800">
-                      <div className="text-lg font-bold text-rose-700 dark:text-rose-300">
+                    <div className="text-center p-4 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-2xl border-2 border-gray-400 dark:border-gray-600 shadow-lg">
+                      <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                         {recipe.nutrition.fat}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Fat</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Fat</div>
                     </div>
                   </div>
                 </div>
@@ -1001,16 +998,16 @@ const RecipeDetails = () => {
 
             {/* Instructions */}
             <div className="lg:col-span-2">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 bg-gradient-to-r from-gray-900 to-black dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
                 Instructions
               </h2>
-              <ol className="space-y-4">
+              <ol className="space-y-6">
                 {recipe.steps?.map((step, index) => (
                   <li key={index} className="flex">
-                    <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-r from-emerald-300 to-teal-600 text-white text-sm font-bold rounded-full flex items-center justify-center mr-4 mt-0.5 shadow-sm">
+                    <span className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-gray-600 to-black text-white text-lg font-bold rounded-2xl flex items-center justify-center mr-6 mt-1 shadow-xl">
                       {index + 1}
                     </span>
-                    <span className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <span className="text-gray-800 dark:text-gray-200 leading-relaxed text-lg font-medium bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 p-4 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md flex-1">
                       {step}
                     </span>
                   </li>
@@ -1036,27 +1033,26 @@ const Favorites = () => {
   if (favoriteRecipes.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 flex items-center">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-10 flex items-center bg-gradient-to-r from-gray-900 to-black dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
           Your Favorite Recipes
-          <Heart size={32} className="ml-3 text-red-500" fill="currentColor" />
+          <Heart size={40} className="ml-4 text-gray-600" fill="currentColor" />
         </h1>
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <HeartCrack size={64} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        <div className="text-center py-16 bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl border-2 border-gray-300 dark:border-gray-700 shadow-2xl">
+          <HeartCrack size={80} className="mx-auto text-gray-500 mb-6" />
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             No favorite recipes yet
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-gray-700 dark:text-gray-300 mb-8 text-lg">
             Start browsing and save recipes you love!
           </p>
           <button
-  onClick={navigateToHome}
-  className="px-6 py-2.5 bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg 
-             hover:from-blue-800 hover:to-blue-600 transition-all duration-200 
-             focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium shadow-sm"
->
-  Browse recipes
-</button>
-
+            onClick={navigateToHome}
+            className="px-8 py-4 bg-gradient-to-r from-gray-700 to-black text-white rounded-2xl 
+                       hover:from-gray-800 hover:to-gray-900 transition-all duration-300 transform hover:scale-105
+                       focus:outline-none focus:ring-4 focus:ring-gray-400 font-bold shadow-xl text-lg"
+          >
+            Browse recipes
+          </button>
         </div>
       </div>
     );
@@ -1064,12 +1060,12 @@ const Favorites = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 flex items-center">
+      <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-10 flex items-center bg-gradient-to-r from-gray-900 to-black dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
         Your Favorite Recipes ({favoriteRecipes.length})
-        <Heart size={32} className="ml-3 text-red-500" fill="currentColor" />
+        <Heart size={40} className="ml-4 text-gray-600" fill="currentColor" />
       </h1>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {favoriteRecipes.map(recipe => (
           <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
@@ -1109,17 +1105,15 @@ const AppContent = () => {
   };
 
   return (
-  <div className="min-h-screen bg-gradient-to-br from-black-900 via-blue-50/50 to-emerald-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 transition-colors">
-    {/* Optional: add a subtle backdrop blur for cohesion */}
-    <div className="backdrop-blur-sm">
-      <Header />
-      <main className="p-4 md:p-8">
-        {getCurrentPageComponent()}
-      </main>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-black dark:via-gray-900 dark:to-gray-800 transition-all duration-500">
+      <div className="backdrop-blur-sm">
+        <Header />
+        <main className="p-4 md:p-8">
+          {getCurrentPageComponent()}
+        </main>
+      </div>
     </div>
-  </div>
-);
-
+  );
 };
 
 export default App;
