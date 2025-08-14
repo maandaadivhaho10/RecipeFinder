@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { Search } from 'lucide-react';
+import SearchBar from '../components/SearchBar';
+import RecipeCard from '../components/RecipeCard';
+import recipes from '../data/recipes.json';
+
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [maxTime, setMaxTime] = useState('');
@@ -111,7 +116,7 @@ const Home = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
           {filteredRecipes.map(recipe => (
             <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
@@ -120,4 +125,5 @@ const Home = () => {
     </div>
   );
 };
+
 export default Home;
