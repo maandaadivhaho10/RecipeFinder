@@ -2,48 +2,45 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { Search } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import RecipeCard from '../components/RecipeCard';
-import recipes from '../data/recipess.json';
 
 const Home = () => {
+  const [recipes, setRecipes] = useState([]); // will be fetched
   const [searchTerm, setSearchTerm] = useState('');
   const [maxTime, setMaxTime] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [loading, setLoading] = useState(true); // loading state
   const debounceRef = useRef(null);
+
+  // Fetch recipes from public folder
+  useEffect(() => {
+    fetch('/recipes.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load recipes.json');
+        return res.json();
+      })
+      .then(data => setRecipes(data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
 
   // Debounced search effect
   useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-    
-    debounceRef.current = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-    }, 300);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedSearch(searchTerm), 300);
 
     return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
+      if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [searchTerm]);
 
-  const handleSearchChange = useCallback((value) => {
-    setSearchTerm(value);
-  }, []);
-
-  const handleMaxTimeChange = useCallback((value) => {
-    setMaxTime(value);
-  }, []);
-
+  const handleSearchChange = useCallback((value) => setSearchTerm(value), []);
+  const handleMaxTimeChange = useCallback((value) => setMaxTime(value), []);
   const handleTagToggle = useCallback((tag) => {
-    setSelectedTags(prev => 
-      prev.includes(tag)
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
+    setSelectedTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     );
   }, []);
-
   const handleReset = useCallback(() => {
     setSearchTerm('');
     setMaxTime('');
@@ -54,7 +51,6 @@ const Home = () => {
   const filteredRecipes = useMemo(() => {
     let filtered = recipes;
 
-    // Search filter
     if (debouncedSearch) {
       const searchLower = debouncedSearch.toLowerCase();
       filtered = filtered.filter(recipe =>
@@ -65,7 +61,6 @@ const Home = () => {
       );
     }
 
-    // Time filter
     if (maxTime) {
       const maxTimeNum = parseInt(maxTime);
       if (!isNaN(maxTimeNum)) {
@@ -73,7 +68,6 @@ const Home = () => {
       }
     }
 
-    // Tag filter
     if (selectedTags.length > 0) {
       filtered = filtered.filter(recipe =>
         selectedTags.every(tag =>
@@ -82,8 +76,10 @@ const Home = () => {
       );
     }
 
-    return filtered.slice(0, 12); // Show first 12 results
-  }, [debouncedSearch, maxTime, selectedTags]);
+    return filtered.slice(0, 12);
+  }, [debouncedSearch, maxTime, selectedTags, recipes]);
+
+  if (loading) return <p className="text-center mt-20 text-lg">Loading recipes…</p>;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

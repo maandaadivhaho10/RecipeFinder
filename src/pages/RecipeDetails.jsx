@@ -1,17 +1,30 @@
-import React, { useState, useMemo, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import { ChefHat, Heart, Star, Clock, Users, TrendingUp, ArrowLeft, Frown } from 'lucide-react';
 import { NavigationContext } from '../contexts/NavigationContext';
 import { FavoritesContext } from '../contexts/FavoritesContext';
-import recipes from "../data/recipess.json";
 
 const RecipeDetails = () => {
   const { selectedRecipeId, navigateToHome } = useContext(NavigationContext);
   const { isFavorite, toggleFavorite } = useContext(FavoritesContext);
   const [imageError, setImageError] = useState(false);
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch recipes from public folder
+  useEffect(() => {
+    fetch('/recipes.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load recipes.json');
+        return res.json();
+      })
+      .then(data => setRecipes(data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
 
   const recipe = useMemo(() => {
     return recipes.find(r => r.id === selectedRecipeId);
-  }, [selectedRecipeId]);
+  }, [selectedRecipeId, recipes]);
 
   const handleBack = useCallback(() => {
     navigateToHome();
@@ -24,6 +37,8 @@ const RecipeDetails = () => {
   const handleImageError = useCallback(() => {
     setImageError(true);
   }, []);
+
+  if (loading) return <p className="text-center mt-20 text-lg">Loading recipe…</p>;
 
   if (!recipe) {
     return (
@@ -46,6 +61,7 @@ const RecipeDetails = () => {
     );
   }
 
+ 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
       <div className="mb-6 md:mb-8">

@@ -1,17 +1,32 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { Heart, HeartCrack } from 'lucide-react';
 import { FavoritesContext } from '../contexts/FavoritesContext';
 import { NavigationContext } from '../contexts/NavigationContext';
 import RecipeCard from '../components/RecipeCard';
-import recipes from '../data/recipess.json';
 
 const Favorites = () => {
   const { favorites } = useContext(FavoritesContext);
   const { navigateToHome } = useContext(NavigationContext);
-  
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch recipes from public folder
+  useEffect(() => {
+    fetch('/recipes.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load recipes.json');
+        return res.json();
+      })
+      .then(data => setRecipes(data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
   const favoriteRecipes = useMemo(() => {
     return recipes.filter(recipe => favorites.includes(recipe.id));
-  }, [favorites]);
+  }, [favorites, recipes]);
+
+  if (loading) return <p className="text-center mt-20 text-lg">Loading recipes…</p>;
 
   if (favoriteRecipes.length === 0) {
     return (

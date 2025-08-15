@@ -1,10 +1,21 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { Search, Timer, Tags, RotateCcw } from 'lucide-react';
 import TagChip from './TagChip';
-import recipes from '../data/recipes.json';
 
 const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selectedTags, onTagToggle, onReset }) => {
   const searchRef = useRef(null);
+  const [recipes, setRecipes] = useState([]);
+
+  // Fetch recipes from public folder
+  useEffect(() => {
+    fetch('/recipes.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load recipes.json');
+        return res.json();
+      })
+      .then(data => setRecipes(data))
+      .catch(err => console.error(err));
+  }, []);
 
   useEffect(() => {
     if (searchRef.current) {
@@ -19,7 +30,7 @@ const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selec
       recipe.dietary?.forEach(tag => tagSet.add(tag));
     });
     return Array.from(tagSet).sort();
-  }, []);
+  }, [recipes]);
 
   return (
     <div className="backdrop-blur-xl bg-gradient-to-br from-white/95 to-gray-100/90 dark:from-gray-900/95 dark:to-black/80 p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-2xl border border-gray-300 dark:border-gray-700 mb-6 md:mb-10">
