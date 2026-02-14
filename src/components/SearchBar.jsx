@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
-import { Search, Timer, Tags, RotateCcw } from 'lucide-react';
-import TagChip from './TagChip';
+import { Search, Timer, Tags, RotateCcw, ChevronDown, X } from 'lucide-react';
 
 const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selectedTags, onTagToggle, onReset }) => {
   const searchRef = useRef(null);
   const [recipes, setRecipes] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   // Fetch recipes from public folder
   useEffect(() => {
@@ -23,6 +24,17 @@ const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selec
     }
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const allTags = useMemo(() => {
     const tagSet = new Set();
     recipes.forEach(recipe => {
@@ -33,33 +45,34 @@ const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selec
   }, [recipes]);
 
   return (
-    <div className="backdrop-blur-xl bg-gradient-to-br from-white/95 to-gray-100/90 dark:from-gray-900/95 dark:to-black/80 p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-2xl border border-gray-300 dark:border-gray-700 mb-6 md:mb-10">
-      <div className="space-y-6 md:space-y-8">
+    <div className="bg-white dark:bg-gray-900 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* Search Input */}
-        <div>
-          <label htmlFor="search" className="block text-base md:text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 md:mb-4 flex items-center">
-            <Search size={18} className="mr-2 md:mr-3 text-gray-600 dark:text-gray-400" />
-            Search recipes
+        <div className="md:col-span-5">
+          <label htmlFor="search" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+            <Search size={16} className="mr-2 text-primary" />
+            Search Recipes
           </label>
-          <input
-            ref={searchRef}
-            id="search"
-            type="text"
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search by title, ingredients, or tags..."
-            className="w-full px-4 md:px-6 py-3 md:py-4 border-2 border-gray-400 dark:border-gray-600 rounded-xl md:rounded-2xl 
-                       focus:outline-none focus:ring-4 focus:ring-gray-300/50 focus:border-gray-600 
-                       dark:bg-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 
-                       shadow-lg transition-all duration-300 text-base md:text-lg bg-white dark:bg-gray-800"
-          />
+          <div className="relative">
+            <input
+              ref={searchRef}
+              id="search"
+              type="text"
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Title, ingredients, or tags..."
+              className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl
+                         focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary
+                         dark:text-gray-100 transition-all duration-200"
+            />
+          </div>
         </div>
 
         {/* Max Time Filter */}
-        <div>
-          <label htmlFor="maxTime" className="block text-base md:text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 md:mb-4 flex items-center">
-            <Timer size={18} className="mr-2 md:mr-3 text-gray-600 dark:text-gray-400" />
-            Max cooking time (minutes)
+        <div className="md:col-span-3">
+          <label htmlFor="maxTime" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+            <Timer size={16} className="mr-2 text-primary" />
+            Max Time (min)
           </label>
           <input
             id="maxTime"
@@ -68,46 +81,81 @@ const SearchBar = ({ searchTerm, onSearchChange, maxTime, onMaxTimeChange, selec
             onChange={(e) => onMaxTimeChange(e.target.value)}
             placeholder="e.g. 30"
             min="1"
-            className="w-full sm:w-48 px-4 md:px-6 py-3 md:py-4 border-2 border-gray-400 dark:border-gray-600 
-                       rounded-xl md:rounded-2xl focus:outline-none focus:ring-4 focus:ring-gray-300/50 
-                       focus:border-gray-600 dark:bg-gray-800 text-gray-900 dark:text-gray-100 
-                       shadow-lg transition-all duration-300 text-base md:text-lg bg-white dark:bg-gray-800"
+            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl
+                       focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary
+                       dark:text-gray-100 transition-all duration-200"
           />
         </div>
 
-        {/* Tag Chips */}
-        <div>
-          <p className="block text-base md:text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 md:mb-4 flex items-center">
-            <Tags size={18} className="mr-2 md:mr-3 text-gray-600 dark:text-gray-400" />
-            Filter by tags
-          </p>
-          <div className="flex flex-wrap gap-2 md:gap-3">
-            {allTags.map(tag => (
-              <TagChip
-                key={tag}
-                tag={tag}
-                isSelected={selectedTags.includes(tag)}
-                onToggle={() => onTagToggle(tag)}
-              />
-            ))}
-          </div>
-        </div>
+        {/* Tag Dropdown */}
+        <div className="md:col-span-4 relative" ref={dropdownRef}>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+            <Tags size={16} className="mr-2 text-primary" />
+            Filter by Tags
+          </label>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl
+                       flex items-center justify-between text-gray-600 dark:text-gray-300
+                       focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary
+                       transition-all duration-200"
+          >
+            <span className="truncate">
+              {selectedTags.length > 0 
+                ? `${selectedTags.length} tags selected` 
+                : "Select tags..."}
+            </span>
+            <ChevronDown size={18} className={`transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
 
-        {/* Reset Button */}
-        {(searchTerm || maxTime || selectedTags.length > 0) && (
+          {isDropdownOpen && (
+            <div className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+              <div className="p-2 grid grid-cols-1 gap-1">
+                {allTags.map(tag => (
+                  <button
+                    key={tag}
+                    onClick={() => onTagToggle(tag)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors duration-150
+                      ${selectedTags.includes(tag)
+                        ? 'bg-primary text-white'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                      }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Selected Tags Display */}
+      {selectedTags.length > 0 && (
+        <div className="mt-6 flex flex-wrap gap-2">
+          {selectedTags.map(tag => (
+            <span 
+              key={tag} 
+              className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20"
+            >
+              {tag}
+              <button 
+                onClick={() => onTagToggle(tag)}
+                className="ml-2 hover:text-primary-hover focus:outline-none"
+              >
+                <X size={12} />
+              </button>
+            </span>
+          ))}
           <button
             onClick={onReset}
-            className="px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-bold text-white
-                       bg-gradient-to-r from-gray-700 to-black hover:from-gray-800 hover:to-gray-900
-                       rounded-xl md:rounded-2xl shadow-xl border-2 border-gray-600 hover:border-gray-500
-                       flex items-center transition-all duration-300 transform hover:scale-105
-                       focus:outline-none focus:ring-4 focus:ring-gray-400"
+            className="text-xs font-bold text-gray-500 hover:text-red-500 transition-colors duration-200 flex items-center ml-2"
           >
-            <RotateCcw size={18} className="mr-2 md:mr-3" />
-            Reset filters
+            <RotateCcw size={14} className="mr-1" />
+            Clear All
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

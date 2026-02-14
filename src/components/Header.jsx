@@ -36,22 +36,24 @@ const Header = () => {
             {/* Logo / Title */}
             <button 
               onClick={navigateToHome}
-              className="text-xl md:text-2xl font-bold text-white tracking-wide hover:text-gray-200 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg px-3 md:px-4 py-2 md:py-3 flex items-center group"
+              className="flex items-center group focus:outline-none"
             >
-              <Utensils size={24} className="mr-2 md:mr-3 text-gray-300 drop-shadow-lg group-hover:rotate-12 transition-transform duration-300" />
-              <span className="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 bg-clip-text text-transparent text-2xl md:text-3xl font-extrabold tracking-wide drop-shadow-md hover:from-blue-800 hover:to-blue-400 transition-all duration-500 ease-in-out">
-                SpoonSense
+              <div className="bg-primary p-2 rounded-xl mr-3 group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-primary/20">
+                <Utensils size={24} className="text-white" />
+              </div>
+              <span className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
+                Recipe<span className="text-primary">Finder</span>
               </span>
             </button>
             
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden md:flex items-center space-x-2">
               <button 
                 onClick={navigateToHome}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white shadow-lg flex items-center ${
+                className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center ${
                   currentPage === 'home' 
-                    ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300 shadow-white/25'
-                    : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-gray-700/40 border border-gray-600 hover:border-gray-500'
+                    ? 'text-white bg-primary shadow-lg shadow-primary/20'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <HomeIcon size={18} className="mr-2" />
@@ -59,16 +61,16 @@ const Header = () => {
               </button>
               <button 
                 onClick={navigateToFavorites}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 relative flex items-center ${
+                className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 relative flex items-center ${
                   currentPage === 'favorites'
-                    ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300 shadow-lg shadow-white/25'
-                    : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-gray-700/40 border border-gray-600 hover:border-gray-500'
+                    ? 'text-white bg-primary shadow-lg shadow-primary/20'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <Heart size={18} className="mr-2" fill={favorites.length > 0 ? 'currentColor' : 'none'} />
                 Favorites
                 {favorites.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg animate-pulse">
+                  <span className="ml-2 bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold">
                     {favorites.length}
                   </span>
                 )}
@@ -108,15 +110,15 @@ const Header = () => {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={closeMobileMenu} />
-          <div className="fixed top-16 right-0 w-64 h-full bg-gradient-to-b from-black via-gray-900 to-gray-800 dark:from-gray-900 dark:via-black dark:to-gray-900 shadow-2xl border-l border-gray-700">
-            <nav className="flex flex-col p-6 space-y-4">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-md" onClick={closeMobileMenu} />
+          <div className="fixed top-16 right-0 w-72 h-full bg-gray-900 shadow-2xl border-l border-white/10">
+            <nav className="flex flex-col p-6 space-y-3">
               <button 
                 onClick={handleHomeClick}
-                className={`w-full text-left px-4 py-3 rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white flex items-center ${
+                className={`w-full text-left px-4 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center ${
                   currentPage === 'home' 
-                    ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-800/40 border border-gray-600'
+                    ? 'text-white bg-primary shadow-lg shadow-primary/20'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <HomeIcon size={18} className="mr-3" />
@@ -124,16 +126,16 @@ const Header = () => {
               </button>
               <button 
                 onClick={handleFavoritesClick}
-                className={`w-full text-left px-4 py-3 rounded-xl font-semibold transition-all duration-300 relative flex items-center ${
+                className={`w-full text-left px-4 py-3 rounded-xl font-semibold transition-all duration-200 relative flex items-center ${
                   currentPage === 'favorites'
-                    ? 'text-black bg-gradient-to-r from-white to-gray-200 border border-gray-300'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-800/40 border border-gray-600'
+                    ? 'text-white bg-primary shadow-lg shadow-primary/20'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <Heart size={18} className="mr-3" fill={favorites.length > 0 ? 'currentColor' : 'none'} />
                 Favorites
                 {favorites.length > 0 && (
-                  <span className="absolute top-2 right-4 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  <span className="ml-auto bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold">
                     {favorites.length}
                   </span>
                 )}

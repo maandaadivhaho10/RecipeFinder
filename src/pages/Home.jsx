@@ -82,7 +82,7 @@ const Home = () => {
   if (loading) return <p className="text-center mt-20 text-lg">Loading recipes…</p>;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div>
       <SearchBar
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
